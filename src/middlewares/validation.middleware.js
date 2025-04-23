@@ -1,4 +1,3 @@
-
 import {
   formatPhoneNumber,
   validateAlphanumericWithSpecialChars,
@@ -12,39 +11,36 @@ import {
   validatePureName,
 } from '@/utils/helpers/app.helpers.js';
 
-import { APIResponse } from '@/service/core/CustomResponse.js';
 import { VALIDATION_TYPES } from '@/utils/constants/app.constant.js';
-
+import { APIResponse } from '@/service/core/CustomResponse.js';
 // Validation handlers for different types
 const validationHandlers = {
   [VALIDATION_TYPES.EMAIL]: (value) => validateEmail(value),
   [VALIDATION_TYPES.PASSWORD]: (value) => validatePassword(value),
   [VALIDATION_TYPES.PURE_NAME]: (value) => validatePureName(value),
-  [VALIDATION_TYPES.ALPHA_NAME]: (value) =>
-    validateAlphanumericWithSpecialChars(value),
+  [VALIDATION_TYPES.ALPHA_NAME]: (value) => validateAlphanumericWithSpecialChars(value),
   [VALIDATION_TYPES.PHONE]: (value) => validatePhoneNumber(value),
   [VALIDATION_TYPES.JSON]: (value) => validateIncomingJson(value),
   [VALIDATION_TYPES.INTEGER]: (value) => validateNumeric(value.toString()),
-  [VALIDATION_TYPES.STRING]: (value) => typeof value === "string",
+  [VALIDATION_TYPES.STRING]: (value) => typeof value === 'string',
   [VALIDATION_TYPES.ARRAY]: (value) => Array.isArray(value),
   [VALIDATION_TYPES.DATETIME]: (value) => Boolean(Date.parse(value)),
-  [VALIDATION_TYPES.OBJECT]: (value) => typeof value === "object",
+  [VALIDATION_TYPES.OBJECT]: (value) => typeof value === 'object',
   [VALIDATION_TYPES.BOOLEAN]: (value) => validateBoolean(value.toString()),
   [VALIDATION_TYPES.NUMBER]: (value) => validateNumber(value),
+  [VALIDATION_TYPES.CUSTOM]: () => true,
 };
 
 // Error messages for different validation types
 const errorMessages = {
   [VALIDATION_TYPES.EMAIL]: (field) => `Invalid ${field}`,
-  [VALIDATION_TYPES.PASSWORD]: (field) => `Provide a strong ${field}`,
+  [VALIDATION_TYPES.PASSWORD]: (field) =>
+    `Provide a strong alphanumeric password with at least 8 characters and 1 special character`,
   [VALIDATION_TYPES.PURE_NAME]: (field) => `Enter a valid ${field}`,
-  [VALIDATION_TYPES.ALPHA_NAME]: (field) =>
-    `Enter a valid alphanumeric ${field} field`,
-  [VALIDATION_TYPES.PHONE]: () =>
-    `Enter a valid phone number with country code`,
+  [VALIDATION_TYPES.ALPHA_NAME]: (field) => `Enter a valid alphanumeric ${field} field`,
+  [VALIDATION_TYPES.PHONE]: () => `Enter a valid phone number with country code`,
   [VALIDATION_TYPES.JSON]: () => `Provide a valid JSON body`,
-  [VALIDATION_TYPES.INTEGER]: (item) =>
-    `Provide a valid Integer value for ${item}`,
+  [VALIDATION_TYPES.INTEGER]: (item) => `Provide a valid Integer value for ${item}`,
   [VALIDATION_TYPES.STRING]: (item) => `Provide a valid string for ${item}`,
   [VALIDATION_TYPES.ARRAY]: () => `Provide a valid array`,
   [VALIDATION_TYPES.DATETIME]: () => `Provide a valid date`,
@@ -81,11 +77,7 @@ const validateField = (value, type, field, res, required) => {
 
   const validator = validationHandlers[type];
   if (!validator) {
-    return APIResponse.error(
-      res,
-      `Unsupported validation type for ${field}`,
-      400
-    );
+    return APIResponse.error(res, `Unsupported validation type for ${field}`, 400);
   }
 
   if (!validator(value)) {
@@ -96,35 +88,46 @@ const validateField = (value, type, field, res, required) => {
   return null;
 };
 
-// Validates array items
+// Enhanced validateArrayItems function to handle conditional validation
 const validateArrayItems = (item, array, arrayType, field, res) => {
   if (arrayType === VALIDATION_TYPES.OBJECT) {
     for (const object of array) {
-      const error = validateObjectFields(object, item.schema, res);
+      // Handle conditional schema validation
+      let effectiveSchema = [...(item.schema || [])];
+
+      // Handle dependent fields
+      effectiveSchema = effectiveSchema.map((schemaItem) => {
+        if (schemaItem.dependsOn) {
+          const { field: dependentField, value: requiredValue } = schemaItem.dependsOn;
+          const shouldValidate = object[dependentField] === requiredValue;
+          return {
+            ...schemaItem,
+            required: shouldValidate ? schemaItem.required : false,
+          };
+        }
+        return schemaItem;
+      });
+
+      const error = validateObjectFields(object, effectiveSchema, res);
       if (error) return error;
 
       // Transform the object fields
-      for (const schemaItem of item.schema) {
+      for (const schemaItem of effectiveSchema) {
         if (object[schemaItem.field] !== undefined) {
-          object[schemaItem.field] = transformValue(
-            schemaItem.type,
-            object[schemaItem.field]
-          );
+          object[schemaItem.field] = transformValue(schemaItem.type, object[schemaItem.field]);
         }
       }
     }
     return null;
   } else {
     for (let arrayItem of array) {
-      const error = validateField(
-        arrayItem,
-        arrayType,
-        field,
-        res,
-        item.required
-      );
-      if (error) return error;
-
+      if (arrayType === VALIDATION_TYPES.OBJECT && item.schema) {
+        const error = validateObjectFields(arrayItem, item.schema, res);
+        if (error) return error;
+      } else {
+        const error = validateField(arrayItem, arrayType, field, res, item.required);
+        if (error) return error;
+      }
       // Transform the array item
       arrayItem = transformValue(arrayType, arrayItem);
     }
@@ -136,13 +139,36 @@ const validateObjectFields = (object, schema, res) => {
   for (const item of schema) {
     const fieldValue = object[item?.field];
 
-    const error = validateField(
-      fieldValue,
-      item?.type,
-      item.field,
-      res,
-      item.required
-    );
+    // Skip validation for dependent fields that don't meet their condition
+    if (item.dependsOn) {
+      const { field: dependentField, value: requiredValue } = item.dependsOn;
+      if (object[dependentField] !== requiredValue) {
+        continue;
+      }
+    }
+
+    // Handle custom validation
+    if (item.type === VALIDATION_TYPES.CUSTOM) {
+      if (!item.validate(fieldValue) && item.required) {
+        return APIResponse.error(res, item.message || `Invalid ${item.field}`, 400);
+      }
+      continue;
+    }
+
+    // Handle nested arrays
+    if (item.type === VALIDATION_TYPES.ARRAY) {
+      if (item.required && (!fieldValue || !Array.isArray(fieldValue))) {
+        return APIResponse.error(res, `${item.field} must be an array`, 400);
+      }
+
+      if (fieldValue && item.arrayType) {
+        const itemsError = validateArrayItems(item, fieldValue, item.arrayType, item.field, res);
+        if (itemsError) return itemsError;
+      }
+      continue;
+    }
+
+    const error = validateField(fieldValue, item.type, item.field, res, item.required);
     if (error) return error;
 
     // Transform the field value
@@ -159,7 +185,23 @@ export const higherOrderUserDataValidation = (dataObject = []) => {
       for (const item of dataObject) {
         const fieldValue = req.body[item.field];
 
-        if (!fieldValue) {
+        // **Handle dependent validation dynamically**
+        if (item.dependsOn) {
+          const { field: dependentField, value: requiredValue } = item.dependsOn;
+          if (req.body[dependentField] === requiredValue) {
+            item.required = true; // Enforce requirement dynamically
+          } else {
+            item.required = false; // Skip validation
+          }
+        }
+
+        if (
+          !fieldValue &&
+          item.required &&
+          item.type !== VALIDATION_TYPES.BOOLEAN &&
+          item.type !== VALIDATION_TYPES.INTEGER &&
+          item.type !== VALIDATION_TYPES.NUMBER
+        ) {
           return APIResponse.error(res, `${item.field} is required`, 400);
         }
 
@@ -175,12 +217,8 @@ export const higherOrderUserDataValidation = (dataObject = []) => {
 
         // Handle custom validation
         if (item.type === VALIDATION_TYPES.CUSTOM) {
-          if (!item.format(fieldValue) && item.required) {
-            return APIResponse.error(
-              res,
-              item.message || `Invalid ${item.field}`,
-              400
-            );
+          if (!item.validate(fieldValue) && item.required) {
+            return APIResponse.error(res, item.message || `Invalid ${item.field}`, 400);
           }
           continue;
         }
@@ -193,7 +231,7 @@ export const higherOrderUserDataValidation = (dataObject = []) => {
               fieldValue,
               item.arrayType,
               item.field,
-              res
+              res,
             );
             if (itemsError) return itemsError;
           } else {
@@ -202,7 +240,7 @@ export const higherOrderUserDataValidation = (dataObject = []) => {
               VALIDATION_TYPES.ARRAY,
               item.field,
               res,
-              item.required
+              item.required,
             );
             if (arrayError) return arrayError;
           }
@@ -220,13 +258,7 @@ export const higherOrderUserDataValidation = (dataObject = []) => {
         }
 
         // Handle regular field validation
-        const error = validateField(
-          fieldValue,
-          item.type,
-          item.field,
-          res,
-          item.required
-        );
+        const error = validateField(fieldValue, item.type, item.field, res, item.required);
         if (error) return error;
 
         // Transform value if needed
@@ -235,7 +267,6 @@ export const higherOrderUserDataValidation = (dataObject = []) => {
 
       next();
     } catch (error) {
-      console.error("Validation error:", error);
       return APIResponse.error(res, error.message, error.statusCode || 500);
     }
   };
@@ -246,10 +277,13 @@ export const validateRequestParams = (schema) => {
   return async (req, res, next) => {
     for (const item of schema) {
       const fieldValue = req.params[item.field];
-      console.log(fieldValue);
       if (!fieldValue) {
         return APIResponse.error(res, `${item.field} is required`, 400);
       }
+
+      const error = validateField(fieldValue, item.type, item.field, res, item.required);
+      if (error) return error;
+
       req.params[item.field] = transformValue(item.type, fieldValue);
     }
     next();
