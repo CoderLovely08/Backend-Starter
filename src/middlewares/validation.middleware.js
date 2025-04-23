@@ -10,10 +10,10 @@ import {
   validatePassword,
   validatePhoneNumber,
   validatePureName,
-} from "../utils/helpers/app.helpers.js";
+} from '@/utils/helpers/app.helpers.js';
 
-import { APIResponse } from "../service/core/CustomResponse.js";
-import { VALIDATION_TYPES } from "../utils/constants/app.constant.js";
+import { APIResponse } from '@/service/core/CustomResponse.js';
+import { VALIDATION_TYPES } from '@/utils/constants/app.constant.js';
 
 // Validation handlers for different types
 const validationHandlers = {

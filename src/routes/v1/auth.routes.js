@@ -1,7 +1,7 @@
-import { Router } from "express";
-import { AuthController } from "../../controllers/v1/Auth.controller.js";
-import { higherOrderUserDataValidation } from "../../middlewares/validation.middleware.js";
-import { ValidationSchema } from "../../schema/validation.schema.js";
+import Router from 'express';
+import { ValidationSchema } from '@/schema/validation.schema.js';
+import { higherOrderUserDataValidation } from '@/middlewares/validation.middleware.js';
+import { AuthController } from '@/controllers/v1/Auth.controller.js';
 
 const router = Router();
 
@@ -14,9 +14,9 @@ const router = Router();
  * }
  */
 router.post(
-  "/system/login",
+  '/system/login',
   higherOrderUserDataValidation(ValidationSchema.loginSchema),
-  AuthController.handlePostSystemUserLogin
+  AuthController.handlePostSystemUserLogin,
 );
 
 /**
@@ -29,9 +29,9 @@ router.post(
  * }
  */
 router.post(
-  "/system/register",
+  '/system/register',
   higherOrderUserDataValidation(ValidationSchema.simpleUserOnboardingSchema),
-  AuthController.handlePostSystemUserRegistration
+  AuthController.handlePostSystemUserRegistration,
 );
 
 export default router;

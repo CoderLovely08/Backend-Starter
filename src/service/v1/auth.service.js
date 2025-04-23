@@ -1,10 +1,10 @@
-import { prisma } from "../../app.js";
-import { PRISMA_ERROR_CODES } from "../../utils/constants/app.constant.js";
+import { prisma } from '@/config/app.config.js';
+import { PRISMA_ERROR_CODES } from '@/utils/constants/app.constant.js';
 import {
   comparePassword,
   hashPassword,
-} from "../../utils/helpers/app.helpers.js";
-import { CustomError } from "../core/CustomResponse.js";
+} from '@/utils/helpers/app.helpers.js';
+import { CustomError } from '@/service/core/CustomResponse.js';
 
 export class AuthService {
   // ------------------------------------------------------------
@@ -19,7 +19,7 @@ export class AuthService {
    */
   static async validateSystemUser(email, password) {
     try {
-      const user = await prisma.systemUsersInfo.findUnique({
+      const user = await prisma.systemUser.findUnique({
         where: {
           email,
         },
@@ -66,7 +66,7 @@ export class AuthService {
     try {
       const hashedPassword = hashPassword(password);
 
-      const user = await prisma.systemUsersInfo.create({
+      const user = await prisma.systemUser.create({
         data: {
           email,
           password: hashedPassword,
@@ -109,7 +109,7 @@ export class AuthService {
    */
   static async authUpdateResetToken(email, resetToken) {
     try {
-      const updatedUser = await prisma.systemUsersInfo.update({
+      const updatedUser = await prisma.systemUser.update({
         where: {
           email: email,
         },
@@ -150,7 +150,7 @@ export class AuthService {
     try {
       const hashedPassword = hashPassword(password);
 
-      const updatedUser = await prisma.systemUsersInfo.update({
+      const updatedUser = await prisma.systemUser.update({
         where: {
           email: email,
         },
@@ -189,7 +189,7 @@ export class AuthService {
    */
   static async authCheckIfEmailExists(email) {
     try {
-      const user = await prisma.systemUsersInfo.findUnique({
+      const user = await prisma.systemUser.findUnique({
         where: { email },
         select: {
           id: true,

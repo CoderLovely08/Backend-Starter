@@ -1,4 +1,4 @@
-import { decodeJwtToken } from "../utils/helpers/app.helpers.js";
+import { decodeJwtToken } from '@/utils/helpers/app.helpers.js';
 
 // --------------------------------------------
 // Middleware to validate jwt token

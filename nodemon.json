@@ -1,0 +1,6 @@
+{
+  "watch": ["src/", "app.js", "loader.js"],
+  "ext": "js,json",
+  "ignore": ["node_modules/", "*.test.js"],
+  "exec": "node --import ./loader.js"
+}

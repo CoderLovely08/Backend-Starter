@@ -6,10 +6,10 @@ import {
   parsePhoneNumberFromString,
 } from "libphonenumber-js";
 import jwt from "jsonwebtoken";
-import { customLogger } from "../../middlewares/logging.middleware.js";
-import { CustomError } from "../../service/core/CustomResponse.js";
-import { TOKEN_TYPES } from "../constants/app.constant.js";
-import config from "../../config/app.config.js";
+import { customLogger } from "@/middlewares/logging.middleware.js";
+import { CustomError } from "@/service/core/CustomResponse.js";
+import { TOKEN_TYPES } from "@/utils/constants/app.constant.js";
+import config from "@/config/app.config.js";
 
 /**
  * @description Method to validate an email

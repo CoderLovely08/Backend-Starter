@@ -1,14 +1,9 @@
-
-import config from "../../config/app.config.js";
-import { APIResponse } from "../../service/core/CustomResponse.js";
-import { AuthService } from "../../service/v1/auth.service.js";
-import { TOKEN_TYPES } from "../../utils/constants/app.constant.js";
-import {
-  comparePassword,
-  generateJwtToken,
-  hashPassword,
-} from "../../utils/helpers/app.helpers.js";
-import crypto from "crypto";
+import config from '@/config/app.config.js';
+import { APIResponse } from '@/service/core/CustomResponse.js';
+import { AuthService } from '@/service/v1/auth.service.js';
+import { TOKEN_TYPES } from '@/utils/constants/app.constant.js';
+import { comparePassword, generateJwtToken, hashPassword } from '@/utils/helpers/app.helpers.js';
+import crypto from 'crypto';
 
 export class AuthController {
   /**
@@ -65,7 +60,7 @@ export class AuthController {
         userType: user.userType.name,
       });
 
-      return APIResponse.success(res, user, "User logged in successfully");
+      return APIResponse.success(res, user, 'User logged in successfully');
     } catch (error) {
       return APIResponse.error(res, error.message, error.statusCode);
     }
@@ -82,14 +77,9 @@ export class AuthController {
     try {
       const { email, password, fullName, userType } = req.body;
 
-      const user = await AuthService.createSystemUser(
-        email,
-        password,
-        fullName,
-        userType
-      );
+      const user = await AuthService.createSystemUser(email, password, fullName, userType);
 
-      return APIResponse.success(res, user, "User registered successfully");
+      return APIResponse.success(res, user, 'User registered successfully');
     } catch (error) {
       return APIResponse.error(res, error.message, error.statusCode);
     }
@@ -111,14 +101,11 @@ export class AuthController {
       const { email } = req.body;
 
       // Generate a random reset token
-      const resetToken = crypto.randomBytes(32).toString("hex");
+      const resetToken = crypto.randomBytes(32).toString('hex');
       const tokenHash = hashPassword(resetToken);
 
       // Update the reset token in the db
-      const updatedUser = await AuthService.authUpdateResetToken(
-        email,
-        tokenHash
-      );
+      const updatedUser = await AuthService.authUpdateResetToken(email, tokenHash);
 
       // Send the reset password email
       const resetUrl = `${config.WEB_URL}/reset-password?token=${resetToken}&email=${email}`;
@@ -131,11 +118,7 @@ export class AuthController {
 
       EmailService.sendResetPasswordEmail(payload);
 
-      return APIResponse.success(
-        res,
-        null,
-        "Reset password email sent successfully"
-      );
+      return APIResponse.success(res, null, 'Reset password email sent successfully');
     } catch (error) {
       console.error(`Error in handlePostForgotPassword: ${error.message}`);
       return APIResponse.error(res, error.message, error.statusCode);
@@ -158,19 +141,16 @@ export class AuthController {
       const { password, confirmPassword, token, email } = req.body;
 
       if (password !== confirmPassword) {
-        return APIResponse.error(res, "Passwords do not match", 400);
+        return APIResponse.error(res, 'Passwords do not match', 400);
       }
 
       const emailExists = await AuthService.authCheckIfEmailExists(email);
 
       // Check if the reset token is valid
-      const isTokenValild = await comparePassword(
-        token,
-        emailExists.resetToken
-      );
+      const isTokenValild = await comparePassword(token, emailExists.resetToken);
 
       if (!isTokenValild) {
-        return APIResponse.error(res, "Invalid token", 400);
+        return APIResponse.error(res, 'Invalid token', 400);
       }
 
       // Check if the token is expired
@@ -178,12 +158,12 @@ export class AuthController {
       const currentDate = new Date();
 
       if (currentDate > tokenSignDate) {
-        return APIResponse.error(res, "Token expired", 400);
+        return APIResponse.error(res, 'Token expired', 400);
       }
 
       await AuthService.authUpdateUserPassword(email, password);
 
-      return APIResponse.success(res, null, "Password updated successfully");
+      return APIResponse.success(res, null, 'Password updated successfully');
     } catch (error) {
       console.error(`Error in handleResetUserPassword: ${error.message}`);
       return APIResponse.error(res, error.message, error.statusCode);

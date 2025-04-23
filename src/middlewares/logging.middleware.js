@@ -1,6 +1,6 @@
-import winston from "winston";
-import morgan from "morgan";
-import config from "../config/app.config.js";
+import winston from 'winston';
+import morgan from 'morgan';
+import config from '@/config/app.config.js';
 const APPLICATION_ENV_TYPES = Object.freeze({
   DEV: "development",
   TEST: "testing",

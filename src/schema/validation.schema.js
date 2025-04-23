@@ -1,6 +1,6 @@
-import { CustomError } from "../service/core/CustomResponse.js";
-import { VALIDATION_TYPES } from "../utils/constants/app.constant.js";
-import { validatePhoneNumber } from "../utils/helpers/app.helpers.js";
+import { CustomError } from '@/service/core/CustomResponse.js';
+import { VALIDATION_TYPES } from '@/utils/constants/app.constant.js';
+import { validatePhoneNumber } from '@/utils/helpers/app.helpers.js';
 
 export class ValidationSchema {
   static idSchema = [

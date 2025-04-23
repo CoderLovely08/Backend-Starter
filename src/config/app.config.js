@@ -1,5 +1,6 @@
-import "dotenv/config";
-import { APPLICATION_ENV_TYPES } from "../utils/constants/app.constant.js";
+import 'dotenv/config';
+import { APPLICATION_ENV_TYPES } from '@/utils/constants/app.constant.js';
+import { PrismaClient } from '@prisma/client';
 
 export const config = {
   PORT: process.env.PORT,
@@ -25,18 +26,18 @@ export const config = {
   JWT: {
     ACCESS_TOKEN: {
       SECRET: process.env.JWT_ACCESS_TOKEN_SECRET,
-      EXPIRES_IN: "1d",
-      APP_EXPIRES_IN: "30d",
+      EXPIRES_IN: '1d',
+      APP_EXPIRES_IN: '30d',
     },
     REFRESH_TOKEN: {
       SECRET: process.env.JWT_REFRESH_TOKEN_SECRET,
-      EXPIRES_IN: "7d",
+      EXPIRES_IN: '7d',
     },
   },
   COOKIE: {
     REFRESH_MAX_AGE: 1000 * 60 * 60 * 24 * 7, // 7 days
     ACCESS_MAX_AGE: 1000 * 60 * 60 * 24, // 1 day
-    SAME_SITE: "none",
+    SAME_SITE: 'none',
     SECURE: true,
   },
   WEB_URL:
@@ -52,8 +53,7 @@ export const config = {
     client_id: process.env.FIREABSE_SERVICE_CLIENT_ID,
     auth_uri: process.env.FIREABSE_SERVICE_AUTH_URI,
     token_uri: process.env.FIREABSE_SERVICE_TOKEN_URI,
-    auth_provider_x509_cert_url:
-      process.env.FIREABSE_SERVICE_AUTH_PROVIDER_X509_CERT_URL,
+    auth_provider_x509_cert_url: process.env.FIREABSE_SERVICE_AUTH_PROVIDER_X509_CERT_URL,
     client_x509_cert_url: process.env.FIREABSE_SERVICE_CLIENT_X509_CERT_URL,
     universe_domain: process.env.FIREABSE_SERVICE_UNIVERSE_DOMAIN,
   },
@@ -71,7 +71,7 @@ export const config = {
       REGION: process.env.AWS_S3_REGION,
       ACCESS_KEY: process.env.AWS_S3_ACCESS_KEY_ID,
       SECRET_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY,
-      REPORTS_FOLDER: "folder-name",
+      REPORTS_FOLDER: 'folder-name',
     },
   },
   AZURE: {
@@ -81,5 +81,10 @@ export const config = {
     },
   },
 };
+
+// Initialize Prisma client
+export const prisma = new PrismaClient({
+  log: config.ENV === APPLICATION_ENV_TYPES.DEV ? ['query', 'error', 'warn'] : ['error'],
+});
 
 export default config;

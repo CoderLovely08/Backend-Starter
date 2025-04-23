@@ -13,29 +13,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model SystemUsersInfo {
-  id                  Int       @id @default(autoincrement()) @map("system_user_id")
-  email               String    @unique @map("system_user_email")
-  password            String    @map("system_user_password")
-  fullName            String    @map("system_user_full_name")
-  userType            UserType  @relation(fields: [userTypeId], references: [id])
-  userTypeId          Int       @map("system_user_type_id")
-  isActive            Boolean   @default(true) @map("system_user_is_active")
-  resetToken          String?   @map("system_user_reset_token")
-  resetTokenExpiresAt DateTime? @map("system_user_reset_token_expires_at")
-  createdAt           DateTime  @default(now()) @map("system_user_created_at")
-  updatedAt           DateTime  @updatedAt @map("system_user_updated_at")
+// schema.prisma
 
-  @@map("SystemUsersInfo")
+model SystemUser {
+  id                  Int              @id @default(autoincrement())
+  email               String           @unique
+  password            String
+  fullName            String
+  userType            UserType         @relation(fields: [userTypeId], references: [id])
+  userTypeId          Int
+  isActive            Boolean          @default(true)
+  resetToken          String?
+  resetTokenExpiresAt DateTime?
+  permissions         UserPermission[]
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 }
 
 model UserType {
-  id          Int               @id @default(autoincrement()) @map("user_type_id")
-  name        String            @unique @map("user_type_name")
-  isActive    Boolean           @default(true) @map("user_type_is_active")
-  createdAt   DateTime          @default(now()) @map("user_type_created_at")
-  updatedAt   DateTime          @updatedAt @map("user_type_updated_at")
-  systemUsers SystemUsersInfo[]
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  description String?
+  isActive    Boolean      @default(true)
+  users       SystemUser[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
 
-  @@map("UserTypeInfo")
+model Permission {
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  description     String?
+  userPermissions UserPermission[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+// Direct permission assignment for users
+model UserPermission {
+  id           Int        @id @default(autoincrement())
+  user         SystemUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       Int
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  permissionId Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([userId, permissionId])
 }
