@@ -8,7 +8,14 @@ export class PermissionService {
    * @returns {Promise<Array>} - An array of permissions
    */
   static async getAllPermissions() {
-    const permissions = await prisma.permission.findMany();
+    const permissions = await prisma.permission.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+      },
+    });
     return permissions;
   }
 

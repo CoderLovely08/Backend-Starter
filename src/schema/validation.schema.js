@@ -85,7 +85,7 @@ export class ValidationSchema {
       required: true,
       validate: (value) => {
         // Eg: users:create
-        const isValid = value.match(/^[a-z]+:(create|read|update|delete)$/);
+        const isValid = value.match(/^[a-z]+:(create|read|update|delete)(:[a-z]+)?$/);
         if (!isValid) {
           throw new CustomError('Invalid permission slug, Eg: users:create', 400);
         }
