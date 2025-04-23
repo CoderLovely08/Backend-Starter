@@ -58,6 +58,7 @@ export class AuthController {
         email: user.email,
         userName: user.fullName,
         userType: user.userType.name,
+        permissions: user.permissions,
       });
 
       return APIResponse.success(res, user, 'User logged in successfully');
