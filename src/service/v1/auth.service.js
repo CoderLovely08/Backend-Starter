@@ -1,9 +1,6 @@
 import { prisma } from '@/config/app.config.js';
 import { PRISMA_ERROR_CODES } from '@/utils/constants/app.constant.js';
-import {
-  comparePassword,
-  hashPassword,
-} from '@/utils/helpers/app.helpers.js';
+import { comparePassword, hashPassword } from '@/utils/helpers/app.helpers.js';
 import { CustomError } from '@/service/core/CustomResponse.js';
 
 export class AuthService {
@@ -24,6 +21,7 @@ export class AuthService {
           email,
         },
         select: {
+          id: true,
           fullName: true,
           email: true,
           password: true,
@@ -33,22 +31,35 @@ export class AuthService {
               name: true,
             },
           },
+          permissions: {
+            select: {
+              permission: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
+            },
+          },
         },
       });
 
       if (!user) {
-        throw new CustomError("User does not exist", 404);
+        throw new CustomError('User does not exist', 404);
       }
 
       const isPasswordValid = await comparePassword(password, user.password);
 
       if (!isPasswordValid) {
-        throw new CustomError("Invalid password", 401);
+        throw new CustomError('Invalid password', 401);
       }
 
       delete user.password;
 
-      return user;
+      const userPermissions = user?.permissions?.map((permission) => permission?.permission?.slug);
+
+      return { ...user, permissions: userPermissions };
     } catch (error) {
       throw new CustomError(error.message);
     }
@@ -84,13 +95,13 @@ export class AuthService {
       return user;
     } catch (error) {
       if (error.code === PRISMA_ERROR_CODES.P2002.code) {
-        if (error.meta.target.includes("system_user_email")) {
-          throw new CustomError("Email already exists", 400);
+        if (error.meta.target.includes('system_user_email')) {
+          throw new CustomError('Email already exists', 400);
         }
       }
 
       if (error.code === PRISMA_ERROR_CODES.P2025.code) {
-        throw new CustomError("User type does not exist", 400);
+        throw new CustomError('User type does not exist', 400);
       }
 
       throw new CustomError(`Error creating system user: ${error.message}`);
@@ -120,19 +131,16 @@ export class AuthService {
       });
 
       if (!updatedUser) {
-        throw new CustomError("Failed to update reset token", 400);
+        throw new CustomError('Failed to update reset token', 400);
       }
 
       return updatedUser;
     } catch (error) {
-      if (error.code === "P2025") {
-        throw new CustomError("Email does not exist", 404);
+      if (error.code === 'P2025') {
+        throw new CustomError('Email does not exist', 404);
       }
 
-      throw new CustomError(
-        `Error updating reset token: ${error.message}`,
-        error.statusCode
-      );
+      throw new CustomError(`Error updating reset token: ${error.message}`, error.statusCode);
     }
   }
 
@@ -162,19 +170,16 @@ export class AuthService {
       });
 
       if (!updatedUser) {
-        throw new CustomError("Failed to update password", 400);
+        throw new CustomError('Failed to update password', 400);
       }
 
       return updatedUser;
     } catch (error) {
-      if (error.code === "P2025") {
-        throw new CustomError("Email does not exist", 404);
+      if (error.code === 'P2025') {
+        throw new CustomError('Email does not exist', 404);
       }
 
-      throw new CustomError(
-        `Error updating password: ${error.message}`,
-        error.statusCode
-      );
+      throw new CustomError(`Error updating password: ${error.message}`, error.statusCode);
     }
   }
 
@@ -201,15 +206,12 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new CustomError("Email does not exist", 404);
+        throw new CustomError('Email does not exist', 404);
       }
 
       return user;
     } catch (error) {
-      throw new CustomError(
-        `Error checking if email exists: ${error.message}`,
-        error.statusCode
-      );
+      throw new CustomError(`Error checking if email exists: ${error.message}`, error.statusCode);
     }
   }
 }

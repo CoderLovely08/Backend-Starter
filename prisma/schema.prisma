@@ -43,6 +43,7 @@ model UserType {
 model Permission {
   id              Int              @id @default(autoincrement())
   name            String           @unique
+  slug            String           @unique
   description     String?
   userPermissions UserPermission[]
   createdAt       DateTime         @default(now())

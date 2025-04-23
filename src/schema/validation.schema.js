@@ -79,6 +79,30 @@ export class ValidationSchema {
   // Permission Schema
   static permissionSchema = [
     { field: 'name', type: VALIDATION_TYPES.STRING, required: true },
+    {
+      field: 'slug',
+      type: VALIDATION_TYPES.CUSTOM,
+      required: true,
+      validate: (value) => {
+        // Eg: users:create
+        const isValid = value.match(/^[a-z]+:(create|read|update|delete)$/);
+        if (!isValid) {
+          throw new CustomError('Invalid permission slug, Eg: users:create', 400);
+        }
+        return isValid;
+      },
+    },
     { field: 'description', type: VALIDATION_TYPES.STRING, required: false },
+  ];
+
+  // Assign Permissions Schema
+  static assignPermissionsSchema = [
+    { field: 'userId', type: VALIDATION_TYPES.INTEGER, required: true },
+    {
+      field: 'permissionIds',
+      type: VALIDATION_TYPES.ARRAY,
+      required: true,
+      arrayType: VALIDATION_TYPES.INTEGER,
+    },
   ];
 }

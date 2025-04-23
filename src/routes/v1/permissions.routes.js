@@ -31,4 +31,30 @@ router.post(
   PermissionController.createPermission,
 );
 
+/**
+ * Route to assign permissions to a user
+ *
+ * POST /api/v1/permissions/assign-permissions
+ *
+ * @param {Object} req.body - The request body
+ * @param {integer} req.body.userId - The id of the user
+ * @param {integer} req.body.permissionId - The id of the permission
+ *
+ * @returns {Object} - The created permission
+ */
+router.post(
+  '/assign-permissions',
+  higherOrderUserDataValidation(ValidationSchema.assignPermissionsSchema),
+  PermissionController.assignPermissions,
+);
+
+/**
+ * Route to delete all permissions
+ *
+ * DELETE /api/v1/permissions/delete-all
+ *
+ * @returns {Object} - The created permission
+ */
+router.delete('/delete-all', PermissionController.deleteAllPermissions);
+
 export default router;
