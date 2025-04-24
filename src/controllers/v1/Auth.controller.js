@@ -61,6 +61,8 @@ export class AuthController {
         permissions: user.permissions,
       });
 
+      user.role = user.userType.name;
+
       return APIResponse.success(res, user, 'User logged in successfully');
     } catch (error) {
       return APIResponse.error(res, error.message, error.statusCode);
