@@ -99,7 +99,7 @@ export class ValidationSchema {
   static assignPermissionsSchema = [
     { field: 'userId', type: VALIDATION_TYPES.INTEGER, required: true },
     {
-      field: 'permissionIds',
+      field: 'permissions',
       type: VALIDATION_TYPES.ARRAY,
       required: true,
       arrayType: VALIDATION_TYPES.INTEGER,

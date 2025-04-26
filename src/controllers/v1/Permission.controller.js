@@ -41,9 +41,9 @@ export class PermissionController {
    */
   static async assignPermissions(req, res) {
     try {
-      const { userId, permissionIds } = req.body;
+      const { userId, permissions } = req.body;
 
-      const permission = await PermissionService.assignPermissions(userId, permissionIds);
+      const permission = await PermissionService.assignPermissions(userId, permissions);
       return APIResponse.success(res, permission, 'Permissions assigned successfully');
     } catch (error) {
       return APIResponse.error(res, error.message, error.statusCode);
