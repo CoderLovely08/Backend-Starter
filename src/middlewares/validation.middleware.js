@@ -58,6 +58,10 @@ const transformValue = (type, value) => {
       return new Date(value);
     case VALIDATION_TYPES.PHONE:
       return formatPhoneNumber(value);
+    case VALIDATION_TYPES.NUMBER:
+      return parseFloat(value);
+    case VALIDATION_TYPES.BOOLEAN:
+      return value.toString() === 'true';
     default:
       return value;
   }

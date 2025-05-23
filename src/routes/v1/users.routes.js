@@ -12,7 +12,7 @@ const router = Router();
  * @route GET /api/v1/users/get-all
  * @returns {Object} 200 - A list of users
  */
-router.get('/get-all', checkPermissions(PERMISSIONS.USER_READ), UserController.getAllUsers);
+router.get('/get-all', UserController.getAllUsers);
 
 /**
  * Get a mock data
@@ -29,7 +29,7 @@ router.get('/get-mock', UserController.getMock);
 router.get(
   '/:id',
   validateRequestParams(ValidationSchema.idSchema),
-  checkPermissions(PERMISSIONS.USER_READ),
+
   UserController.getUserById,
 );
 
@@ -38,20 +38,20 @@ router.get(
  * @route POST /api/v1/users/create
  * @returns {Object} 200 - A user
  */
-router.post('/create', checkPermissions(PERMISSIONS.USER_CREATE), UserController.createUser);
+router.post('/create', UserController.createUser);
 
 /**
  * Update a user
  * @route PUT /api/v1/users/:id
  * @returns {Object} 200 - A user
  */
-router.put('/:id', checkPermissions(PERMISSIONS.USER_UPDATE), UserController.updateUser);
+router.put('/:id', UserController.updateUser);
 
 /**
  * Delete a user
  * @route DELETE /api/v1/users/:id
  * @returns {Object} 200 - A user
  */
-router.delete('/:id', checkPermissions(PERMISSIONS.USER_DELETE), UserController.deleteUser);
+router.delete('/:id', UserController.deleteUser);
 
 export default router;

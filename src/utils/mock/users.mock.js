@@ -1,4 +1,3 @@
-// Generate mock data
 const users = [];
 const designations = ['Manager', 'Developer', 'Designer', 'Tester'];
 
