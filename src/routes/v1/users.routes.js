@@ -15,6 +15,13 @@ const router = Router();
 router.get('/get-all', checkPermissions(PERMISSIONS.USER_READ), UserController.getAllUsers);
 
 /**
+ * Get a mock data
+ * @route GET /api/v1/users/get-mock
+ * @returns {Object} 200 - A mock data
+ */
+router.get('/get-mock', UserController.getMock);
+
+/**
  * Get a user by id
  * @route GET /api/v1/users/:id
  * @returns {Object} 200 - A user

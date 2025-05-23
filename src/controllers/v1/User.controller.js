@@ -1,5 +1,6 @@
 import { APIResponse } from '@/service/core/CustomResponse.js';
 import { UserService } from '@/service/v1/user.service.js';
+import { getMockUsers } from '@/utils/mock/users.mock.js';
 
 export class UserController {
   /**
@@ -12,6 +13,23 @@ export class UserController {
     try {
       const users = await UserService.getAllUsers();
       return APIResponse.success(res, users, 'Users fetched successfully');
+    } catch (error) {
+      return APIResponse.error(res, error.message, error.statusCode);
+    }
+  }
+
+  /**
+   * Get a mock data
+   * @param {Object} req - The request object
+   * @param {Object} res - The response object
+   * @returns {Object} The response object
+   */
+  static async getMock(req, res) {
+    try {
+      const { limit = 10, page = 1, search = '' } = req.query;
+      const users = getMockUsers({ limit, page, search });
+
+      return APIResponse.success(res, users, 'Mock data fetched successfully');
     } catch (error) {
       return APIResponse.error(res, error.message, error.statusCode);
     }
