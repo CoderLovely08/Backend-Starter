@@ -15,8 +15,8 @@ npm install @supabase/supabase-js
 ```js
 // config/supabase.config.js
 
-import { createClient } from "@supabase/supabase-js";
-import { config } from "./app.config.js";
+import { createClient } from '@supabase/supabase-js';
+import { config } from './app.config.js';
 
 const supabaseUrl = config.SUPABASE.URL;
 const supabaseKey = config.SUPABASE.PUBLIC_KEY;
@@ -27,9 +27,9 @@ export const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
 ```js
 // services/supabase.service.js
-import { getFilePathFromUrl } from "../utils/app.utils.js";
-import { config } from "../config/index.js";
-import { supabaseClient } from "../config/supabase.config.js";
+import { getFilePathFromUrl } from '../utils/app.utils.js';
+import { config } from '../config/index.js';
+import { supabaseClient } from '../config/supabase.config.js';
 
 export class SupabaseService {
   /**
@@ -44,13 +44,10 @@ export class SupabaseService {
     originalFileName,
     fileBuffer,
     fileType,
-    folderName = config.SUPABASE.LOGOS_FOLDER
+    folderName = config.SUPABASE.LOGOS_FOLDER,
   ) {
     try {
-      const randomFileName = `${originalFileName.replaceAll(
-        " ",
-        "_"
-      )}_${Date.now()}`;
+      const randomFileName = `${originalFileName.replaceAll(' ', '_')}_${Date.now()}`;
       // Generate a random filename
       const filePath = `${folderName}/${randomFileName}`; // Specify the path of the file in the bucket
 
@@ -70,7 +67,7 @@ export class SupabaseService {
         return {
           success: true,
           statusCode: 200,
-          message: "File uploaded successfully",
+          message: 'File uploaded successfully',
           fileSrc: filePath,
           fileUrl,
         }; // Return uploaded data
@@ -101,8 +98,8 @@ export class SupabaseService {
       const fileSrc = getFilePathFromUrl(fileUrl); // Get the file path from the URL
 
       // Extract the folder name and file name from the fileSrc
-      const folderName = fileSrc.split("/")[0];
-      const fileName = fileSrc.split("/")[1];
+      const folderName = fileSrc.split('/')[0];
+      const fileName = fileSrc.split('/')[1];
       // Retrieve public URL of the file from Supabase Storage
       const { data } = supabaseClient.storage
         .from(config.SUPABASE.BUCKET_NAME) // Access the specified bucket
@@ -110,7 +107,7 @@ export class SupabaseService {
 
       return {
         success: true,
-        message: "File fetched",
+        message: 'File fetched',
         publicUrl: data.publicUrl,
       };
     } catch (error) {
@@ -132,8 +129,8 @@ export class SupabaseService {
       const fileSrc = getFilePathFromUrl(fileUrl); // Get the file path from the URL
 
       // Extract the folder name and file name from the fileSrc
-      const folderName = fileSrc.split("/")[0];
-      const fileName = fileSrc.split("/")[1];
+      const folderName = fileSrc.split('/')[0];
+      const fileName = fileSrc.split('/')[1];
 
       // Delete the file from Supabase Storage
       const { error } = await supabaseClient.storage
@@ -144,7 +141,7 @@ export class SupabaseService {
         return {
           success: true,
           statusCode: 200,
-          message: "File deleted successfully",
+          message: 'File deleted successfully',
         };
       } else {
         return {
@@ -178,8 +175,8 @@ npm install nodemailer
 ```js
 // config/nodemailer.config.js
 
-import { config } from "./app.config.js";
-import nodemailer from "nodemailer";
+import { config } from './app.config.js';
+import nodemailer from 'nodemailer';
 
 export const nodemailerTransporter = nodemailer.createTransport({
   host: config.EMAIL.SMTP_HOST,
@@ -203,12 +200,7 @@ export const nodemailerTransporter = nodemailer.createTransport({
  * @param {string} from - The sender's email address.
  * @returns {Promise<Object>} - A result object indicating success or failure.
  */
-const sendEmail = async (
-  userEmail,
-  subject,
-  templateHtml,
-  from = "Hello <support@hello.com>"
-) => {
+const sendEmail = async (userEmail, subject, templateHtml, from = 'Hello <support@hello.com>') => {
   try {
     const mailOptions = {
       from,
@@ -238,7 +230,7 @@ npm install multer
 ```js
 // config/multer.config.js
 
-import multer from "multer";
+import multer from 'multer';
 
 const MAX_FILE_SIZE_MB = 3;
 
@@ -256,7 +248,7 @@ export default upload;
 ```js
 // routes/v1/auth.routes.js
 
-router.post("/signup", upload.single("profilePicture"), signup);
+router.post('/signup', upload.single('profilePicture'), signup);
 ```
 
 ## 4. Firebase Admin SDK
@@ -272,8 +264,8 @@ npm install firebase-admin
 ```js
 // config/firebase.config.js
 
-import admin from "firebase-admin";
-import { config } from "./app.config.js";
+import admin from 'firebase-admin';
+import { config } from './app.config.js';
 
 export const firebaseApp = admin.initializeApp({
   credential: admin.credential.cert(config.FIREABSE_SERIVCE_ACCOUNT),
@@ -309,8 +301,8 @@ npm install @aws-sdk/client-s3
 ```js
 // config/aws.config.js
 
-import { S3Client } from "@aws-sdk/client-s3";
-import { config } from "./index.js";
+import { S3Client } from '@aws-sdk/client-s3';
+import { config } from './index.js';
 
 export const s3Client = new S3Client({
   region: config.AWS.S3.REGION,
@@ -325,9 +317,9 @@ export const s3Client = new S3Client({
 
 ```js
 // services/s3.service.js
-import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
-import { config } from "../config/app.config.js";
-import { s3Client } from "../config/aws.config.js";
+import { DeleteObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { config } from '../config/app.config.js';
+import { s3Client } from '../config/aws.config.js';
 
 export class S3Service {
   /**
@@ -343,13 +335,10 @@ export class S3Service {
     originalFileName,
     fileBuffer,
     fileType,
-    folderName = config.SUPABASE.LOGOS_FOLDER
+    folderName = config.SUPABASE.LOGOS_FOLDER,
   ) {
     try {
-      const randomFileName = `${originalFileName.replaceAll(
-        " ",
-        "_"
-      )}_${Date.now()}`;
+      const randomFileName = `${originalFileName.replaceAll(' ', '_')}_${Date.now()}`;
 
       const params = {
         Bucket: config.AWS.S3.BUCKET_NAME,
@@ -367,7 +356,7 @@ export class S3Service {
       return {
         success: true,
         statusCode: 200,
-        message: "File uploaded successfully",
+        message: 'File uploaded successfully',
         fileSrc: `${folderName}/${randomFileName}`,
         fileUrl,
       };
@@ -389,7 +378,7 @@ export class S3Service {
    */
   static async deleteFileFromS3(fileUrl) {
     try {
-      const fileName = fileUrl.split("/").slice(-1)[0];
+      const fileName = fileUrl.split('/').slice(-1)[0];
 
       const params = {
         Bucket: config.AWS.S3.BUCKET_NAME,
@@ -403,7 +392,7 @@ export class S3Service {
       return {
         success: true,
         statusCode: 200,
-        message: "File deleted successfully",
+        message: 'File deleted successfully',
       };
     } catch (error) {
       console.error(`Error in deleteFileFromS3: ${error.message}`);
@@ -415,4 +404,102 @@ export class S3Service {
     }
   }
 }
+```
+
+## 6. Redis
+
+### 6.1. Install Dependencies
+
+```bash
+npm install ioredis
+```
+
+### 6.2. Create a redis configuration
+
+```js
+// config/redis.config.js
+
+import { Redis } from 'ioredis';
+import config from '@/config/app.config.js';
+
+const redis = new Redis(
+  `rediss://${config.REDIS.USERNAME}:${config.REDIS.PASSWORD}@${config.REDIS.HOST}:${config.REDIS.PORT}`,
+  {
+    maxRetriesPerRequest: null,
+  },
+);
+
+export default redis;
+```
+
+### 6.3. Usage
+
+```js
+// services/redis.service.js
+import config from '@/config/app.config.js';
+import redis from '@/config/redis.config.js';
+
+export class RedisService {
+  /**
+   * Set a key-value pair in Redis.
+   * @param {string} key - The key.
+   * @param {string} value - The value.
+   * @param {number} [expiration=3600] - Expiration time in seconds (default: 1 hour).
+   */
+  static async set(key, value, ttl = config.REDIS.TTL.DAY_1) {
+    value = JSON.stringify(value);
+    await redis.set(key, value, 'EX', ttl);
+  }
+
+  /**
+   * Get a value by key from Redis.
+   * @param {string} key - The key.
+   * @returns {Promise<string|null>} - The value, or null if not found.
+   */
+  static async get(key) {
+    const value = await redis.get(key);
+    const parsedValue = JSON.parse(value);
+    return Array.isArray(parsedValue) ? [...parsedValue] : parsedValue;
+  }
+
+  /**
+   * Delete a key from Redis.
+   * @param {string} key - The key to delete.
+   */
+  static async del(key) {
+    await redis.del(key);
+  }
+
+  /**
+   * Set an expiration time for a key in Redis.
+   * @param {string} key - The key.
+   * @param {number} ttl - Expiration time in seconds.
+   */
+  static async expire(key, ttl) {
+    await redis.expire(key, ttl);
+  }
+
+  /**
+   * Get all keys from Redis.
+   * @returns {Promise<string[]>} - An array of keys.
+   */
+  static async getAllKeys() {
+    return await redis.keys('*');
+  }
+
+  /**
+   * Flush all keys from Redis.
+   */
+  static async flushall() {
+    await redis.flushall();
+  }
+}
+
+// Usage
+const redisService = new RedisService();
+
+await redisService.set('key', 'value');
+const value = await redisService.get('key');
+await redisService.del('key');
+await redisService.expire('key', 60);
 ```
