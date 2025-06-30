@@ -15,6 +15,7 @@ import {
   securityLoggingMiddleware,
 } from '@/middlewares/logging.middleware.js';
 import { APPLICATION_ENV_TYPES } from '@/utils/constants/app.constant.js';
+import { APIResponse } from '@/service/core/CustomResponse.js';
 
 // Create environment-specific logger
 const logger = createLogger(config.ENV);
@@ -71,7 +72,7 @@ logger.info('Application Starting', {
 
 // Routes
 app.get('/', (req, res) => {
-  res.json({
+  APIResponse.success(res, {
     success: true,
     message: `Welcome to the API! 🚀`,
     environment: config.ENV,

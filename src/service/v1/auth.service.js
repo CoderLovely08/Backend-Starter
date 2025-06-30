@@ -61,7 +61,7 @@ export class AuthService {
 
       return { ...user, permissions: userPermissions };
     } catch (error) {
-      throw new CustomError(error.message);
+      throw new CustomError(error.message, error.statusCode);
     }
   }
 
@@ -104,7 +104,7 @@ export class AuthService {
         throw new CustomError('User type does not exist', 400);
       }
 
-      throw new CustomError(`Error creating system user: ${error.message}`);
+      throw new CustomError(`Error creating system user: ${error.message}`, error.statusCode);
     }
   }
 

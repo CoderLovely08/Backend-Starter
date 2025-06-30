@@ -47,7 +47,7 @@ export class AuthController {
    * @param {Object} res - The response object
    * @returns {Object} The response object
    */
-  static async handlePostSystemUserLogin(req, res) {
+  static async handlePostSystemUserLogin(req, res, next) {
     try {
       const { email, password } = req.body;
 
@@ -65,7 +65,7 @@ export class AuthController {
 
       return APIResponse.success(res, user, 'User logged in successfully');
     } catch (error) {
-      return APIResponse.error(res, error.message, error.statusCode);
+      next(error);
     }
   }
 
@@ -76,7 +76,7 @@ export class AuthController {
    * @param {Object} res - The response object
    * @returns {Object} The response object
    */
-  static async handlePostSystemUserRegistration(req, res) {
+  static async handlePostSystemUserRegistration(req, res, next) {
     try {
       const { email, password, fullName, userType } = req.body;
 
@@ -84,7 +84,7 @@ export class AuthController {
 
       return APIResponse.success(res, user, 'User registered successfully');
     } catch (error) {
-      return APIResponse.error(res, error.message, error.statusCode);
+      next(error);
     }
   }
 
@@ -99,7 +99,7 @@ export class AuthController {
    * @param {Object} res - The response object
    * @returns {Object} The response object
    */
-  static async handlePostRequestResetParentPassword(req, res) {
+  static async handlePostRequestResetParentPassword(req, res, next) {
     try {
       const { email } = req.body;
 
@@ -119,12 +119,11 @@ export class AuthController {
         resetUrl,
       };
 
-      EmailService.sendResetPasswordEmail(payload);
+      // EmailService.sendResetPasswordEmail(payload);
 
       return APIResponse.success(res, null, 'Reset password email sent successfully');
     } catch (error) {
-      console.error(`Error in handlePostForgotPassword: ${error.message}`);
-      return APIResponse.error(res, error.message, error.statusCode);
+      next(error);
     }
   }
 
@@ -139,7 +138,7 @@ export class AuthController {
    * @param {Object} res - The response object
    * @returns {Object} The response object
    */
-  static async handlePostUpdateUserPassword(req, res) {
+  static async handlePostUpdateUserPassword(req, res, next) {
     try {
       const { password, confirmPassword, token, email } = req.body;
 
@@ -168,8 +167,7 @@ export class AuthController {
 
       return APIResponse.success(res, null, 'Password updated successfully');
     } catch (error) {
-      console.error(`Error in handleResetUserPassword: ${error.message}`);
-      return APIResponse.error(res, error.message, error.statusCode);
+      next(error);
     }
   }
 }

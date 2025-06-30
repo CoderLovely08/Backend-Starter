@@ -1,7 +1,5 @@
 import { Router } from 'express';
 import { UserController } from '@/controllers/v1/User.controller.js';
-import { checkPermissions } from '@/middlewares/auth.middleware.js';
-import { PERMISSIONS } from '@/utils/constants/db.constants.js';
 import { validateRequestParams } from '@/middlewares/validation.middleware.js';
 import { ValidationSchema } from '@/schema/validation.schema.js';
 

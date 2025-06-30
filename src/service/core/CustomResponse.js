@@ -8,7 +8,7 @@ export class CustomError extends Error {
    * @param {string} message - Message
    * @param {number} statusCode - Status code
    */
-  constructor(message, statusCode) {
+  constructor(message, statusCode = 500) {
     super(message);
     this.statusCode = statusCode;
   }
@@ -42,7 +42,7 @@ export class APIResponse {
    * @param {number} statusCode - Status code
    * @returns {Object} Response object
    */
-  static error(res, message = "Internal Server Error", statusCode = 500) {
+  static error(res, message = 'Internal Server Error', statusCode = 500) {
     return res.status(statusCode).json({
       success: false,
       message,

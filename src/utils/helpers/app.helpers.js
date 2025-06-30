@@ -1,15 +1,12 @@
-import validator from "validator";
-import bcrypt from "bcrypt";
-import crypto from "crypto";
-import {
-  isValidPhoneNumber,
-  parsePhoneNumberFromString,
-} from "libphonenumber-js";
-import jwt from "jsonwebtoken";
-import { customLogger } from "@/middlewares/logging.middleware.js";
-import { CustomError } from "@/service/core/CustomResponse.js";
-import { TOKEN_TYPES } from "@/utils/constants/app.constant.js";
-import config from "@/config/app.config.js";
+import validator from 'validator';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
+import { isValidPhoneNumber, parsePhoneNumberFromString } from 'libphonenumber-js';
+import jwt from 'jsonwebtoken';
+import { customLogger } from '@/middlewares/logging.middleware.js';
+import { CustomError } from '@/service/core/CustomResponse.js';
+import { TOKEN_TYPES } from '@/utils/constants/app.constant.js';
+import config from '@/config/app.config.js';
 
 /**
  * @description Method to validate an email
@@ -119,7 +116,7 @@ export const generateRandomOTP = async (OTP_DIGITS = 6) => {
  */
 export const validatePureName = (name) => {
   try {
-    return validator.isAlpha(name.replace(/\s/g, ""));
+    return validator.isAlpha(name.replace(/\s/g, ''));
   } catch (error) {
     console.error(`Error in validateName: ${error.message}`);
     return false;
@@ -133,7 +130,7 @@ export const validatePureName = (name) => {
  */
 export const validateAlphanumeric = (string) => {
   try {
-    return validator.isAlphanumeric(string.replace(/\s/g, ""));
+    return validator.isAlphanumeric(string.replace(/\s/g, ''));
   } catch (error) {
     console.error(`Error in validateAlphanumeric: ${error.message}`);
     return false;
@@ -147,13 +144,11 @@ export const validateAlphanumeric = (string) => {
  */
 export const validateAlphanumericWithSpecialChars = (string) => {
   try {
-    return validator.isAlphanumeric(string.replace(/\s/g, ""), "en-US", {
+    return validator.isAlphanumeric(string.replace(/\s/g, ''), 'en-US', {
       ignore: "-'#$@!_*&^%(){}|\\/",
     });
   } catch (error) {
-    console.error(
-      `Error in validateAlphanumericWithSpecialChars: ${error.message}`
-    );
+    console.error(`Error in validateAlphanumericWithSpecialChars: ${error.message}`);
     return false;
   }
 };
@@ -180,7 +175,7 @@ export const parsePhoneNumber = (phoneNumber, countryCode) => {
  */
 export const generateRandomString = (length = 8) => {
   try {
-    return crypto.randomUUID().split("-")[0].toUpperCase();
+    return crypto.randomUUID().split('-')[0].toUpperCase();
   } catch (error) {
     console.error(`Error in generateRandomString: ${error.message}`);
     return null;
@@ -194,7 +189,7 @@ export const generateRandomString = (length = 8) => {
  */
 export const getFilePathFromUrl = (url) => {
   try {
-    return url.split("/").slice(-2).join("/");
+    return url.split('/').slice(-2).join('/');
   } catch (error) {
     console.error(`Error in getFilePathFromUrl: ${error.message}`);
     return null;
@@ -249,9 +244,7 @@ export const generateJwtToken = (payload, tokenType = TOKEN_TYPES.ACCESS) => {
     return token;
   } catch (error) {
     customLogger.error(`Error generating ${tokenType} token: ${error.message}`);
-    throw new CustomError(
-      `Error generating ${tokenType} token: ${error.message}`
-    );
+    throw new CustomError(`Error generating ${tokenType} token: ${error.message}`);
   }
 };
 
@@ -262,7 +255,7 @@ export const generateJwtToken = (payload, tokenType = TOKEN_TYPES.ACCESS) => {
  */
 export const validateHourMinTime = (time) => {
   try {
-    const timeArray = time.split(":");
+    const timeArray = time.split(':');
     if (timeArray.length !== 2) {
       return false;
     }
@@ -339,17 +332,14 @@ export const validateNumber = (number) => {
  */
 export const getFormattedFileName = (fileName) => {
   try {
-    const fileExtension = fileName.split(".").pop();
+    const fileExtension = fileName.split('.').pop();
     const formattedFileName = `${new Date().getTime()}_${fileName
-      .split(".")[0]
+      .split('.')[0]
       .split(/\s+/)
-      .join("_")}.${fileExtension}`;
+      .join('_')}.${fileExtension}`;
     return formattedFileName;
   } catch (error) {
-    throw new CustomError(
-      `Error in getFormattedFileName: ${error.message}`,
-      501
-    );
+    throw new CustomError(`Error in getFormattedFileName: ${error.message}`, 501);
   }
 };
 
@@ -360,7 +350,7 @@ export const getFormattedFileName = (fileName) => {
  */
 export const getFileNameFromUrl = (url) => {
   try {
-    return url.split("/").pop();
+    return url.split('/').pop();
   } catch (error) {
     console.error(`Error in getFileNameFromUrl: ${error.message}`);
     return null;
@@ -376,7 +366,7 @@ export const formatMacAddress = (macAddress) => {
   try {
     return macAddress
       ?.match(/.{1,2}/g)
-      .join(":")
+      .join(':')
       .toUpperCase();
   } catch (error) {
     console.error(`Error in formatMacAddress: ${error.message}`);

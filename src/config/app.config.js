@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client';
 
 export const config = {
   PORT: process.env.PORT,
+  APP_NAME: process.env.APPLICATION_NAME,
   rateLimit: {
     windowMs: 5 * 60 * 1000,
     max: 100,
@@ -71,7 +72,6 @@ export const config = {
       REGION: process.env.AWS_S3_REGION,
       ACCESS_KEY: process.env.AWS_S3_ACCESS_KEY_ID,
       SECRET_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY,
-      REPORTS_FOLDER: 'folder-name',
     },
   },
   AZURE: {
@@ -79,6 +79,10 @@ export const config = {
       CONNECTION_STRING: process.env.AZURE_STORAGE_CONNECTION_STRING,
       CONTAINER_NAME: process.env.AZURE_STORAGE_CONTAINER_NAME,
     },
+  },
+  TELEGRAM: {
+    BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
+    CHAT_ID: process.env.TELEGRAM_CHAT_ID,
   },
 };
 
