@@ -20,6 +20,7 @@ cat ~/.ssh/github_deploy_key.pub
 4. Add the public key to your repository.
 
 ### Step 4: Configure SSH on Your Server
+
 ```
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/github_deploy_key
@@ -29,11 +30,13 @@ echo "Host github.com
 ```
 
 ### Step 5: Test the Connection
+
 ```bash
 ssh -T git@github.com
 ```
 
-*If successful, you should see:*
+_If successful, you should see:_
+
 ```
 Hi username! You've successfully authenticated, but GitHub does not provide shell access.
 ```

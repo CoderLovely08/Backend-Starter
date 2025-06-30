@@ -503,3 +503,103 @@ const value = await redisService.get('key');
 await redisService.del('key');
 await redisService.expire('key', 60);
 ```
+
+## 7. Telegram Notification
+
+### 7.1. Install Dependencies and configuration
+
+```bash
+npm install axios
+```
+
+- Add this to the .env file
+  ```env
+  TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+  TELEGRAM_CHAT_ID=your_telegram_chat_id
+  ```
+
+- Add this to the app.config.js
+
+  ```js
+  TELEGRAM: {
+    BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
+    CHAT_ID: process.env.TELEGRAM_CHAT_ID,
+  },
+  ```
+
+### 7.2. Create a telegram notification configuration
+
+- Add this to the app.constant.js
+
+  ```js
+  export const MESSAGE_URL = (botToken) => `https://api.telegram.org/bot${botToken}/sendMessage`;
+  ```
+
+- Add this to the notifier.service.js
+
+  ```js
+  import config from '@/config/app.config.js';
+  import { customLogger } from '@/middlewares/logging.middleware.js';
+  import { MESSAGE_URL } from '@/utils/constants/app.constant.js';
+  import axios from 'axios';
+
+  export const sendTelegramMessage = async ({
+    message = 'No message',
+    stack = '',
+    method = '',
+    path = '',
+    body = {},
+    query = {},
+    user = 'Unknown',
+  }) => {
+    try {
+      const now = new Date().toISOString();
+
+      const formattedMessage = `
+  🚨 *Backend Error Alert*
+  *${config.APP_NAME}*
+  *Time:* ${now}
+  *Environment:* ${config.ENV}
+  *User:* ${user}
+  *Path:* \`${method} ${path}\`
+  *Query:* \`${JSON.stringify(query)}\`
+  *Body:* \`${JSON.stringify(body)}\`
+  
+  *Error:* \`${message}\`
+  *Stack Trace:*
+  \`\`\`
+  ${stack?.split('\n').slice(0, 5).join('\n') || 'N/A'}
+  \`\`\`
+  `.trim();
+
+      const response = await axios.post(MESSAGE_URL(config.TELEGRAM.BOT_TOKEN), {
+        chat_id: config.TELEGRAM.CHAT_ID,
+        text: formattedMessage,
+        parse_mode: 'Markdown',
+      });
+
+      return response.data;
+    } catch (error) {
+      customLogger.error('Telegram Notification Failed', {
+        message: error.message,
+        stack: error.stack,
+      });
+      // Don't throw to avoid interfering with main error handling
+      return null;
+    }
+  };
+  ```
+
+### 7.3. Usage
+
+```js
+await sendTelegramMessage({
+  message: 'Test message',
+  stack: 'Test stack',
+  method: 'GET',
+  path: '/test',
+  body: {},
+  query: {},
+  user: 'Unknown',
+});
+```

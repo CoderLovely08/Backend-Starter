@@ -13,6 +13,5 @@ npm install express bcrypt cors jsonwebtoken validator body-parser @prisma/clien
 ```js
 // app.js
 
-import express from "express";
-
+import express from 'express';
 ```
