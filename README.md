@@ -82,8 +82,8 @@ backend/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd backend
+   git clone https://github.com/CoderLovely08/Backend-Starter
+   cd Backend-Starter
    ```
 
 2. **Install dependencies**
