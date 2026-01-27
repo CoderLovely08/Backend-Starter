@@ -55,11 +55,19 @@ export class UserController {
    * Create a user
    * @param {Object} req - The request object
    * @param {Object} res - The response object
+   * @param {Function} next - The next middleware function
    * @returns {Object} The response object
    */
-  static async createUser(req, res) {
+  static async createUser(req, res, next) {
     try {
-      return APIResponse.success(res, null, 'User created successfully');
+      const { fullName, email, password, userTypeId } = req.body;
+      const user = await UserService.createUser({
+        fullName,
+        email,
+        password,
+        userTypeId,
+      });
+      return APIResponse.success(res, user, 'User created successfully', 201);
     } catch (error) {
       next(error);
     }
@@ -69,24 +77,31 @@ export class UserController {
    * Update a user
    * @param {Object} req - The request object
    * @param {Object} res - The response object
+   * @param {Function} next - The next middleware function
    * @returns {Object} The response object
    */
   static async updateUser(req, res, next) {
     try {
-      return APIResponse.success(res, null, 'User updated successfully');
+      const { id } = req.params;
+      const updateData = req.body;
+      const user = await UserService.updateUser(parseInt(id), updateData);
+      return APIResponse.success(res, user, 'User updated successfully');
     } catch (error) {
       next(error);
     }
   }
 
   /**
-   * Delete a user
+   * Delete a user (soft delete)
    * @param {Object} req - The request object
    * @param {Object} res - The response object
+   * @param {Function} next - The next middleware function
    * @returns {Object} The response object
    */
   static async deleteUser(req, res, next) {
     try {
+      const { id } = req.params;
+      await UserService.deleteUser(parseInt(id));
       return APIResponse.success(res, null, 'User deleted successfully');
     } catch (error) {
       next(error);

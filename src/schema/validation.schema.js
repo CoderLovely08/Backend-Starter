@@ -105,4 +105,20 @@ export class ValidationSchema {
       arrayType: VALIDATION_TYPES.INTEGER,
     },
   ];
+
+  // Create User Schema
+  static createUserSchema = [
+    { field: 'fullName', type: VALIDATION_TYPES.PURE_NAME, required: true },
+    { field: 'email', type: VALIDATION_TYPES.EMAIL, required: true },
+    { field: 'password', type: VALIDATION_TYPES.PASSWORD, required: true },
+    { field: 'userTypeId', type: VALIDATION_TYPES.INTEGER, required: true },
+  ];
+
+  // Update User Schema
+  static updateUserSchema = [
+    { field: 'fullName', type: VALIDATION_TYPES.PURE_NAME, required: false },
+    { field: 'email', type: VALIDATION_TYPES.EMAIL, required: false },
+    { field: 'userTypeId', type: VALIDATION_TYPES.INTEGER, required: false },
+    { field: 'isActive', type: VALIDATION_TYPES.BOOLEAN, required: false },
+  ];
 }

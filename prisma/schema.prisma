@@ -23,6 +23,8 @@ model SystemUser {
   userType            UserType         @relation(fields: [userTypeId], references: [id])
   userTypeId          Int
   isActive            Boolean          @default(true)
+  isDeleted           Boolean          @default(false)
+  deletedAt           DateTime?
   resetToken          String?
   resetTokenExpiresAt DateTime?
   permissions         UserPermission[]
