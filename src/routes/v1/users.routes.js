@@ -18,7 +18,7 @@ const router = Router();
  */
 router.get(
   '/get-all',
-  checkPermissions(PERMISSIONS.USERS_READ),
+  // checkPermissions(PERMISSIONS.USERS_READ),
   UserController.getAllUsers,
 );
 
@@ -30,7 +30,7 @@ router.get(
  */
 router.get(
   '/get-mock',
-  checkPermissions(PERMISSIONS.USERS_READ),
+  // checkPermissions(PERMISSIONS.USERS_READ),
   UserController.getMock,
 );
 
@@ -43,7 +43,7 @@ router.get(
 router.get(
   '/:id',
   validateRequestParams(ValidationSchema.idSchema),
-  checkPermissions(PERMISSIONS.USERS_READ),
+  // checkPermissions(PERMISSIONS.USERS_READ),
   UserController.getUserById,
 );
 
@@ -55,7 +55,7 @@ router.get(
  */
 router.post(
   '/create',
-  checkPermissions(PERMISSIONS.USERS_CREATE),
+  // checkPermissions(PERMISSIONS.USERS_CREATE),
   higherOrderUserDataValidation(ValidationSchema.createUserSchema),
   UserController.createUser,
 );
@@ -69,7 +69,7 @@ router.post(
 router.put(
   '/:id',
   validateRequestParams(ValidationSchema.idSchema),
-  checkPermissions(PERMISSIONS.USERS_UPDATE),
+  // checkPermissions(PERMISSIONS.USERS_UPDATE),
   higherOrderUserDataValidation(ValidationSchema.updateUserSchema),
   UserController.updateUser,
 );
@@ -83,7 +83,7 @@ router.put(
 router.delete(
   '/:id',
   validateRequestParams(ValidationSchema.idSchema),
-  checkPermissions(PERMISSIONS.USERS_DELETE),
+  // checkPermissions(PERMISSIONS.USERS_DELETE),
   UserController.deleteUser,
 );
 

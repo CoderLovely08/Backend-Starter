@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { PERMISSION_DEFINITIONS } from '../src/utils/constants/permissions.constant.js';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -33,6 +34,25 @@ async function main() {
   console.log(`✅ ${PERMISSION_DEFINITIONS.length} permissions seeded`);
 
   console.log('🎉 Seed completed successfully!');
+
+  // Create an initial SuperAdmin user
+  const superAdminType = await prisma.userType.findUnique({
+    where: { name: 'SuperAdmin' },
+  });
+  const hashedPassword = bcrypt.hashSync('Pass@123', 10);
+
+  if (superAdminType) {
+    const superAdminUser = await prisma.systemUser.upsert({
+      where: { email: 'admin@gmail.com' },
+      update: {},
+      create: {
+        fullName: 'Super Admin',
+        email: 'admin@gmail.com',
+        userTypeId: 1, // Assuming SuperAdmin has ID 1
+        password: hashedPassword
+      }
+    });
+  }
 }
 
 main()
