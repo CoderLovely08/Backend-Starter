@@ -22,4 +22,4 @@ export function resolve(specifier, context, nextResolve) {
 }
 
 // Register the loader
-register('./loader.js', baseURL);
+// register('./loader.ts', baseURL);
